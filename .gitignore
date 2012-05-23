@@ -1,0 +1,6 @@
+/.*waf*
+/.unittest-gtest
+/build
+/install
+
+*.pyc
