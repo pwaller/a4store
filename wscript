@@ -7,11 +7,17 @@ from waflib.Task import Task
 from waflib.Tools import c_preproc
 
 def options(opt):
-    opt.load('compiler_c compiler_cxx python')
+    opt.load('compiler_cxx')
+    
+    opt.load('unittest_gtest',
+             tooldir="common/waf")
 
 def configure(conf):
-    conf.load('compiler_c compiler_cxx python')
+    conf.load('compiler_cxx')
     
+    conf.load('unittest_gtest',
+              tooldir="common/waf")
+             
     conf.env.append_value("CXXFLAGS", ["-std=c++0x", "-ggdb"])
     conf.env.append_value("RPATH", [conf.env.LIBDIR])
     conf.env.A4_VERSION = a4_version
@@ -37,6 +43,13 @@ def build(bld):
         source="src/apps/a4store_standalone_test.cpp",
         includes="src/",
         target="a4store_standalone_test",
+        use=["a4store", "CERN_ROOT_SYSTEM"])
+        
+    bld.program(features="gtest cxx",
+        source=bld.path.ant_glob("src/gtests/**.cpp"),
+        includes="src/",
+        rpath=[bld.path.get_bld()],
+        target="a4store-gtests",
         use=["a4store", "CERN_ROOT_SYSTEM"])
     
     headers = bld.path.ant_glob("src/a4/**.h")
