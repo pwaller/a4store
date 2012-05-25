@@ -11,6 +11,9 @@ def options(opt):
     
     opt.load('unittest_gtest',
              tooldir="common/waf")
+             
+    opt.add_option("--debug", action="store_true",
+        help="Turn optimization off")
 
 def configure(conf):
     conf.load('compiler_cxx')
@@ -20,6 +23,13 @@ def configure(conf):
              
     conf.env.append_value("CXXFLAGS", ["-std=c++0x", "-ggdb"])
     conf.env.append_value("RPATH", [conf.env.LIBDIR])
+    
+    if conf.options.debug:
+        conf.env.DEBUG_ENABLED = "1"
+    else:
+        conf.env.append_value("CXXFLAGS", ["-O2"])
+        # conf.env.append_value("DEFINES", ["NDEBUG"])
+        
     conf.env.A4_VERSION = a4_version
     
     conf.check_cfg(path="root-config", package="", uselib_store="CERN_ROOT_SYSTEM",
@@ -31,6 +41,8 @@ def configure(conf):
     conf.to_log(conf.env)
 
 def build(bld):
+    if bld.options.debug and not bool(bld.env.DEBUG_ENABLED):
+        raise bld.errors.WafError("Specify --debug at configure time!")
 
     from os.path import join as pjoin
 
@@ -44,7 +56,7 @@ def build(bld):
         includes="src/",
         target="a4store_standalone_test",
         use=["a4store", "CERN_ROOT_SYSTEM"])
-        
+    
     bld.program(features="gtest cxx",
         source=bld.path.ant_glob("src/gtests/**.cpp"),
         includes="src/",
