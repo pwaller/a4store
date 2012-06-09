@@ -10,7 +10,7 @@ using a4::store::ObjectStore;
 using a4::store::RTH1D;
 using a4::store::RTH2D;
 
-const size_t GRIND_REPETITIONS = 1000000;
+const size_t GRIND_REPETITIONS = 10000000;
 
 TEST(a4store, plain_10_th1d) {
     TH1D h10("test0", "test", 100, 0, 100);
@@ -67,25 +67,49 @@ TEST(a4store, a4store_10_th1d) {
     ObjectStore S = backstore.store();
     
     for (size_t i = 0; i < GRIND_REPETITIONS; i++) {
+        S.T<RTH1D>("test0")(100, 0., 100.).fill((i+0) % 100);
+        S.T<RTH1D>("test1")(100, 0., 100.).fill((i+1) % 100);
+        S.T<RTH1D>("test2")(100, 0., 100.).fill((i+2) % 100);
+        S.T<RTH1D>("test3")(100, 0., 100.).fill((i+3) % 100);
+        S.T<RTH1D>("test4")(100, 0., 100.).fill((i+4) % 100);
+        S.T<RTH1D>("test5")(100, 0., 100.).fill((i+5) % 100);
+        S.T<RTH1D>("test6")(100, 0., 100.).fill((i+6) % 100);
+        S.T<RTH1D>("test7")(100, 0., 100.).fill((i+7) % 100);
+        S.T<RTH1D>("test8")(100, 0., 100.).fill((i+8) % 100);
+        S.T<RTH1D>("test9")(100, 0., 100.).fill((i+9) % 100);
+    }
+}
+
+TEST(a4store, a4store_10_th1d_dynamic) {
+    RootObjectStore backstore;
+    ObjectStore S = backstore.store();
+    
+    for (size_t i = 0; i < GRIND_REPETITIONS; i++) {
         for (int j = 0; j < 10; j++) {
-        //int j = 0;
-            S.T<RTH1D>("test", j)(100, 0., 100.).fill((i+j) % 100); //j += 1;
-            /*
-        S.T<RTH1D>("test1")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test2")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test3")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test4")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test5")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test6")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test7")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test8")(100, 0., 100.).fill((i+j) % 100); j += 1;
-        S.T<RTH1D>("test9")(100, 0., 100.).fill((i+j) % 100);
-        */
+            S.T<RTH1D>("test", j)(100, 0., 100.).fill((i+j) % 100);
         }
     }
 }
 
 TEST(a4store, a4store_10_th2d) {
+    RootObjectStore backstore;
+    ObjectStore S = backstore.store();
+    
+    for (size_t i = 0; i < GRIND_REPETITIONS; i++) {
+        S.T<RTH2D>("test0")(100, 0., 100.)(100, 0., 100.).fill((i+0) % 100, (10+i+0) % 100);
+        S.T<RTH2D>("test1")(100, 0., 100.)(100, 0., 100.).fill((i+1) % 100, (10+i+1) % 100);
+        S.T<RTH2D>("test2")(100, 0., 100.)(100, 0., 100.).fill((i+2) % 100, (10+i+2) % 100);
+        S.T<RTH2D>("test3")(100, 0., 100.)(100, 0., 100.).fill((i+3) % 100, (10+i+3) % 100);
+        S.T<RTH2D>("test4")(100, 0., 100.)(100, 0., 100.).fill((i+4) % 100, (10+i+4) % 100);
+        S.T<RTH2D>("test5")(100, 0., 100.)(100, 0., 100.).fill((i+5) % 100, (10+i+5) % 100);
+        S.T<RTH2D>("test6")(100, 0., 100.)(100, 0., 100.).fill((i+6) % 100, (10+i+6) % 100);
+        S.T<RTH2D>("test7")(100, 0., 100.)(100, 0., 100.).fill((i+7) % 100, (10+i+7) % 100);
+        S.T<RTH2D>("test8")(100, 0., 100.)(100, 0., 100.).fill((i+8) % 100, (10+i+8) % 100);
+        S.T<RTH2D>("test9")(100, 0., 100.)(100, 0., 100.).fill((i+9) % 100, (10+i+9) % 100);
+    }
+}
+
+TEST(a4store, a4store_10_th2d_dynamic) {
     RootObjectStore backstore;
     ObjectStore S = backstore.store();
     
@@ -98,6 +122,7 @@ TEST(a4store, a4store_10_th2d) {
         }
     }
 }
+
 
 /*
 class MinimalistPrinter : public ::testing::EmptyTestEventListener {
@@ -153,6 +178,14 @@ class Environment : public ::testing::Environment {
                   
         std::cout << "10 x 2D hist time(a4store) / time(root) = "
                   << time_map["a4store_10_th2d"] / time_map["plain_10_th2d"]
+                  << std::endl;
+                  
+        std::cout << "10 x 1D hist time(a4store dynamic) / time(root) = "
+                  << time_map["a4store_10_th1d_dynamic"] / time_map["plain_10_th1d"]
+                  << std::endl;
+                  
+        std::cout << "10 x 2D hist time(a4store dynamic) / time(root) = "
+                  << time_map["a4store_10_th2d_dynamic"] / time_map["plain_10_th2d"]
                   << std::endl;
     }
 };
